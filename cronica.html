@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Crónica — Diario de Actualidad</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IM+Fell+English:ital@0;1&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1008;
+    --paper: #f5f0e8;
+    --aged: #e8dfc8;
+    --rule: #2b1d0e;
+    --accent: #8b1a1a;
+    --light-rule: #c4b89a;
+    --caption: #5c4a2a;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.6;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* Top bar */
+  .top-bar {
+    border-bottom: 1px solid var(--light-rule);
+    padding: 6px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--caption);
+  }
+
+  .top-bar .tagline { font-style: italic; text-transform: none; letter-spacing: 0; font-size: 12px; }
+
+  /* Masthead */
+  .masthead {
+    text-align: center;
+    padding: 24px 0 16px;
+    border-bottom: 4px double var(--rule);
+    position: relative;
+  }
+
+  .masthead-kicker {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--caption);
+    margin-bottom: 8px;
+  }
+
+  .masthead h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(52px, 9vw, 108px);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.08);
+  }
+
+  .masthead-sub {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--caption);
+    margin-top: 8px;
+    letter-spacing: 0.04em;
+  }
+
+  .masthead-rule {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .masthead-rule hr { flex: 1; border: none; border-top: 1px solid var(--rule); }
+  .masthead-rule .diamond { color: var(--accent); font-size: 10px; }
+
+  /* Nav */
+  .section-nav {
+    border-bottom: 2px solid var(--rule);
+    border-top: 2px solid var(--rule);
+    padding: 8px 0;
+    margin: 0;
+  }
+  .section-nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+  .section-nav a {
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink);
+    font-weight: 600;
+    padding: 2px 0;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .section-nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* Breaking banner */
+  .breaking {
+    background: var(--accent);
+    color: var(--paper);
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .breaking-label {
+    background: var(--paper);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+  .breaking-text {
+    font-family: 'Source Serif 4', serif;
+    white-space: nowrap;
+    animation: marquee 30s linear infinite;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* Main grid */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 0;
+    border-bottom: 2px solid var(--rule);
+    margin-top: 0;
+  }
+
+  .col {
+    padding: 20px 18px;
+  }
+  .col + .col {
+    border-left: 1px solid var(--light-rule);
+  }
+
+  /* Article styles */
+  .article { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--light-rule); }
+  .article:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .article-section {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .article h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .article h2.large { font-size: 38px; line-height: 1.05; }
+  .article h2.small { font-size: 18px; }
+  .article h2.xs { font-size: 15px; font-weight: 700; }
+
+  .article-deck {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--caption);
+    line-height: 1.4;
+    margin-bottom: 10px;
+    border-left: 2px solid var(--accent);
+    padding-left: 10px;
+  }
+
+  .article p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #2a1e10;
+    margin-bottom: 10px;
+    text-align: justify;
+    hyphens: auto;
+  }
+  .article p:first-of-type::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    font-weight: 900;
+    float: left;
+    line-height: 0.8;
+    margin: 4px 6px 0 0;
+    color: var(--ink);
+  }
+
+  .article .byline {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--caption);
+    margin-bottom: 10px;
+  }
+  .article .byline span { font-style: italic; text-transform: none; color: var(--accent); }
+
+  .article img {
+    width: 100%;
+    margin: 12px 0;
+    filter: sepia(20%) contrast(1.05);
+    display: block;
+  }
+  .caption {
+    font-size: 11px;
+    color: var(--caption);
+    font-style: italic;
+    border-top: 1px solid var(--light-rule);
+    padding-top: 4px;
+    margin-top: -8px;
+    margin-bottom: 12px;
+  }
+
+  /* Pull quote */
+  .pullquote {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-style: italic;
+    line-height: 1.3;
+    text-align: center;
+    border-top: 3px solid var(--rule);
+    border-bottom: 3px solid var(--rule);
+    padding: 16px 8px;
+    margin: 20px 0;
+    color: var(--ink);
+  }
+  .pullquote::before { content: '\201C'; font-size: 48px; line-height: 0; vertical-align: -0.4em; color: var(--accent); margin-right: 2px; }
+
+  /* Featured image placeholder */
+  .feature-img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #2b1d0e 0%, #5c3a1a 50%, #8b5e2e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 12px 0 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .feature-img::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px
+    );
+  }
+  .feature-img span {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: rgba(245,240,232,0.4);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    z-index: 1;
+  }
+
+  .feature-img.alt {
+    background: linear-gradient(135deg, #1a2b1a 0%, #2e4a2e 60%, #4a6a3a 100%);
+  }
+  .feature-img.alt2 {
+    background: linear-gradient(135deg, #1a1a2b 0%, #2a2a5a 60%, #3a3a8a 100%);
+  }
+
+  /* Column divider headline */
+  .col-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 16px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--rule);
+    color: var(--ink);
+  }
+
+  /* Stock-style mini items */
+  .brief {
+    padding: 10px 0;
+    border-bottom: 1px dotted var(--light-rule);
+  }
+  .brief:last-child { border-bottom: none; }
+  .brief h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .brief p { font-size: 12px; color: var(--caption); margin: 0; text-align: left; }
+  .brief p::first-letter { all: unset; }
+
+  /* Opinion box */
+  .opinion-box {
+    background: var(--aged);
+    border: 1px solid var(--light-rule);
+    padding: 16px;
+    margin-top: 16px;
+  }
+  .opinion-box .label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .opinion-box p { font-size: 13px; font-style: italic; text-align: left; }
+  .opinion-box p::first-letter { all: unset; }
+  .opinion-box .sig { margin-top: 8px; font-size: 11px; font-weight: 600; color: var(--caption); font-style: normal; }
+
+  /* Weather strip */
+  .weather-strip {
+    display: flex;
+    gap: 0;
+    border-top: 1px solid var(--light-rule);
+    border-bottom: 1px solid var(--light-rule);
+    margin-bottom: 20px;
+    font-size: 11px;
+  }
+  .weather-city {
+    flex: 1;
+    text-align: center;
+    padding: 6px 4px;
+    border-right: 1px solid var(--light-rule);
+  }
+  .weather-city:last-child { border-right: none; }
+  .weather-city .city-name { letter-spacing: 0.1em; text-transform: uppercase; font-size: 9px; color: var(--caption); }
+  .weather-city .temp { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; }
+  .weather-city .cond { font-style: italic; font-size: 10px; color: var(--caption); }
+
+  /* Bottom grid */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-bottom: 2px solid var(--rule);
+  }
+  .bottom-col {
+    padding: 18px 16px;
+    border-right: 1px solid var(--light-rule);
+  }
+  .bottom-col:last-child { border-right: none; }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--caption);
+    letter-spacing: 0.05em;
+    border-top: 3px double var(--rule);
+  }
+  footer strong { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--ink); }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .masthead, .main-grid, .bottom-grid {
+    animation: fadeInUp 0.6s ease both;
+  }
+  .main-grid { animation-delay: 0.15s; }
+  .bottom-grid { animation-delay: 0.3s; }
+
+  @media (max-width: 900px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .col + .col { border-left: none; border-top: 1px solid var(--light-rule); }
+    .bottom-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .bottom-grid { grid-template-columns: 1fr; }
+    .masthead h1 { font-size: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <span>Jueves, 19 de Febrero de 2026 · Año CXLII · Nº 51.847</span>
+    <span class="tagline">«La verdad antes que el consuelo»</span>
+    <span>Edición Nacional · 2,50 €</span>
+  </div>
+
+  <!-- Masthead -->
+  <div class="masthead">
+    <p class="masthead-kicker">Fundado en 1884 · Independiente desde su primer número</p>
+    <h1>La Crónica</h1>
+    <p class="masthead-sub">Diario de Política, Cultura, Economía y Sociedad</p>
+    <div class="masthead-rule">
+      <hr>
+      <span class="diamond">◆ ◆ ◆</span>
+      <hr>
+    </div>
+  </div>
+</div>
+
+<!-- Nav -->
+<div class="section-nav">
+  <div class="container">
+    <ul>
+      <li><a href="#">Portada</a></li>
+      <li><a href="#">Nacional</a></li>
+      <li><a href="#">Internacional</a></li>
+      <li><a href="#">Economía</a></li>
+      <li><a href="#">Cultura</a></li>
+      <li><a href="#">Ciencia</a></li>
+      <li><a href="#">Deportes</a></li>
+      <li><a href="#">Opinión</a></li>
+      <li><a href="#">Sociedad</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Breaking news -->
+<div class="breaking">
+  <span class="breaking-label">Última Hora</span>
+  <span class="breaking-text">
+    Cumbre climática en Bruselas alcanza acuerdo histórico &nbsp;·&nbsp; 
+    El Banco Central eleva tipos de interés al 3,25% &nbsp;·&nbsp; 
+    Descubren nueva especie marina en el Atlántico Sur &nbsp;·&nbsp; 
+    Protestas en Buenos Aires por reforma laboral &nbsp;·&nbsp; 
+    El gobierno anuncia plan de vivienda de 12.000 millones &nbsp;·&nbsp;
+    Cumbre climática en Bruselas alcanza acuerdo histórico &nbsp;·&nbsp; 
+    El Banco Central eleva tipos de interés al 3,25% &nbsp;·&nbsp; 
+    Descubren nueva especie marina en el Atlántico Sur &nbsp;·&nbsp; 
+    Protestas en Buenos Aires por reforma laboral &nbsp;·&nbsp; 
+    El gobierno anuncia plan de vivienda de 12.000 millones
+  </span>
+</div>
+
+<!-- Main Grid -->
+<div class="container">
+  <div class="main-grid">
+
+    <!-- Left Column -->
+    <div class="col">
+      <div class="col-headline">Nacional</div>
+
+      <div class="article">
+        <p class="article-section">Política</p>
+        <h2 class="small">Congreso aprueba nueva ley de transparencia por amplia mayoría</h2>
+        <div class="byline">Por <span>Marta Villareal</span> · Madrid</div>
+        <p>El pleno del Congreso ratificó ayer la reforma que obliga a todos los organismos públicos a publicar contratos y licitaciones en tiempo real, con 289 votos a favor.</p>
+      </div>
+
+      <div class="article">
+        <p class="article-section">Economía</p>
+        <h2 class="small">La inflación cede al 2,1% impulsada por la caída del precio energético</h2>
+        <div class="byline">Por <span>Ricardo Fuentes</span> · Barcelona</div>
+        <p>El Instituto Nacional de Estadística publicó datos que confirman la moderación sostenida de los precios durante cinco meses consecutivos, aliviando la presión sobre las familias.</p>
+      </div>
+
+      <!-- Weather -->
+      <div class="col-headline" style="margin-top:16px">El Tiempo</div>
+      <div class="weather-strip">
+        <div class="weather-city">
+          <div class="city-name">Madrid</div>
+          <div class="temp">14°</div>
+          <div class="cond">Parcial</div>
+        </div>
+        <div class="weather-city">
+          <div class="city-name">Bcn</div>
+          <div class="temp">17°</div>
+          <div class="cond">Soleado</div>
+        </div>
+        <div class="weather-city">
+          <div class="city-name">Sevilla</div>
+          <div class="temp">21°</div>
+          <div class="cond">Despejado</div>
+        </div>
+      </div>
+
+      <div class="opinion-box">
+        <div class="label">Editorial</div>
+        <p>La transparencia no es un privilegio ni una concesión: es la condición mínima para que la democracia funcione como lo que debe ser, un contrato entre ciudadanos y sus representantes.</p>
+        <p class="sig">— La Dirección</p>
+      </div>
+    </div>
+
+    <!-- Center Column (main story) -->
+    <div class="col">
+      <div class="article">
+        <p class="article-section">Internacional · Medio Ambiente</p>
+        <h2 class="large">Europa sella un pacto sin precedentes para reducir emisiones un 65% antes de 2035</h2>
+        <div class="article-deck">Los líderes de 31 naciones firmaron el Protocolo de Bruselas tras cuatro días de negociaciones maratonianas que pusieron a prueba la cohesión del bloque.</div>
+        <div class="byline">Por <span>Claudia Méndez</span> y <span>Hans Werner</span> · Bruselas</div>
+
+        <div class="feature-img">
+          <span>Fotografía · Cumbre de Bruselas · 18 Feb. 2026</span>
+        </div>
+        <p class="caption">Los mandatarios reunidos en el Palacio Egmont durante la sesión plenaria de cierre. (AFP / Jan Steen)</p>
+
+        <p>La capital belga fue escenario ayer de uno de los acuerdos climáticos más ambiciosos de la historia reciente. Tras cuatro días de negociaciones que en más de una ocasión estuvieron al borde del colapso, los representantes de las principales economías europeas estamparon su firma en un documento que compromete a sus países a reducir las emisiones de gases de efecto invernadero en un 65 por ciento respecto a los niveles de 1990, con fecha límite el año 2035.</p>
+
+        <div class="pullquote">Este acuerdo es la línea divisoria entre el mundo que heredamos y el mundo que dejaremos</div>
+
+        <p>El texto, de 78 páginas, establece un mecanismo de revisión anual obligatoria y prevé sanciones económicas para los países que incumplan los objetivos parciales fijados cada dos años. La inclusión de este dispositivo de control fue el último escollo que debió superarse, ya que varias delegaciones se opusieron durante horas a cualquier forma de penalización automática.</p>
+
+        <p>La presidenta de la Comisión Europea calificó el pacto de "punto de inflexión histórico" y subrayó que por primera vez se han comprometido no solo los 27 miembros de la Unión, sino también cuatro países candidatos y varios socios estratégicos del continente. Organizaciones ecologistas, aunque reconocieron el avance, advirtieron que las metas siguen siendo insuficientes para limitar el calentamiento a 1,5 grados centígrados.</p>
+
+        <p>Los mercados financieros respondieron con cautela: el sector energético europeo cerró con leves descensos mientras los valores de renovables registraron ganancias superiores al tres por ciento. Los analistas señalan que la implementación concreta de las medidas determinará el verdadero impacto del acuerdo en las próximas décadas.</p>
+      </div>
+
+      <div class="article">
+        <p class="article-section">Cultura · Letras</p>
+        <h2>La poeta Lena Sofía Vilches gana el Premio Cervantes en una ceremonia emocionante</h2>
+        <div class="byline">Por <span>Tomás Aranda</span> · Alcalá de Henares</div>
+        <div class="feature-img alt" style="aspect-ratio:21/6">
+          <span>Fotografía · Entrega del Premio Cervantes</span>
+        </div>
+        <p class="caption">Lena Sofía Vilches recibió el galardón de manos de Sus Majestades los Reyes. (EFE / M. Rodríguez)</p>
+        <p>La escritora chilena, con una obra que abarca más de cuarenta años y diecisiete poemarios, recogió el máximo reconocimiento de las letras hispanas ante una sala entregada que aplaudió en pie su discurso sobre la memoria y el exilio.</p>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col">
+      <div class="col-headline">Internacional</div>
+
+      <div class="article">
+        <p class="article-section">Geopolítica</p>
+        <h2 class="small">Tensión en el estrecho de Ormuz tras maniobras navales no anunciadas</h2>
+        <div class="byline">Por <span>Alexei Morin</span> · Teherán</div>
+        <p>Varios buques de guerra realizaron ejercicios a escasos kilómetros de las rutas comerciales más transitadas del mundo, elevando la preocupación de los mercados de hidrocarburos.</p>
+      </div>
+
+      <div class="article">
+        <p class="article-section">Ciencia</p>
+        <h2 class="small">La NASA confirma la presencia de agua líquida bajo la superficie de Encélado</h2>
+        <div class="byline">Por <span>Isabel Prado</span> · Houston</div>
+        <div class="feature-img alt2" style="aspect-ratio:4/3; margin-bottom:8px;">
+          <span>Imagen · Sonda Cassini</span>
+        </div>
+        <p>Nuevos datos de la misión en curso ratifican que el océano subsuperficial de la luna de Saturno contiene compuestos orgánicos complejos y condiciones propicias para la vida microbiana.</p>
+      </div>
+
+      <div class="article">
+        <p class="article-section">Deportes</p>
+        <h2 class="xs">Liga: El Atlético consolida el liderato con goleada frente al Betis (4–1)</h2>
+        <p style="margin:0; font-size:12px; color:var(--caption);">Los rojiblancos aprovecharon la derrota del segundo clasificado para ampliar su ventaja a cinco puntos. Griezmann marcó un doblete.</p>
+      </div>
+
+      <div class="col-headline" style="margin-top:20px">Breves</div>
+      <div class="brief">
+        <h4>México aprueba presupuesto de educación récord</h4>
+        <p>La Cámara aprobó 412.000 millones de pesos para el sector, un incremento del 18% respecto al ejercicio anterior.</p>
+      </div>
+      <div class="brief">
+        <h4>Tren de alta velocidad Lisboa–Madrid en pruebas finales</h4>
+        <p>El recorrido se completará en menos de dos horas y media. La inauguración oficial está prevista para octubre.</p>
+      </div>
+      <div class="brief">
+        <h4>Récord de visitantes en el Museo del Prado en 2025</h4>
+        <p>Más de cuatro millones de personas cruzaron sus puertas el año pasado, superando todos los registros históricos.</p>
+      </div>
+    </div>
+
+  </div><!-- /.main-grid -->
+
+  <!-- Bottom Grid -->
+  <div class="bottom-grid">
+    <div class="bottom-col">
+      <div class="col-headline">Economía</div>
+      <div class="article">
+        <h2 class="xs">La bolsa española alcanza máximos de cinco años impulsada por valores tecnológicos</h2>
+        <p>El IBEX 35 cerró a 13.421 puntos, con alzas generalizadas en el sector de semiconductores y energía renovable ante perspectivas optimistas del BCE para el segundo trimestre.</p>
+      </div>
+    </div>
+    <div class="bottom-col">
+      <div class="col-headline">Sociedad</div>
+      <div class="article">
+        <h2 class="xs">España registra su mayor tasa de natalidad desde 2008 gracias a políticas de apoyo familiar</h2>
+        <p>Los datos del Ministerio de Sanidad muestran un aumento del 7,3% en el número de nacimientos, atribuido en parte a las nuevas ayudas directas para familias con hijos menores de tres años.</p>
+      </div>
+    </div>
+    <div class="bottom-col">
+      <div class="col-headline">Tecnología</div>
+      <div class="article">
+        <h2 class="xs">La Unión Europea ultima el Reglamento de Inteligencia Artificial General con nuevas salvaguardas</h2>
+        <p>Bruselas incorpora cláusulas que obligan a los desarrolladores de modelos de propósito general a publicar sus metodologías de evaluación de riesgos antes del lanzamiento comercial.</p>
+      </div>
+    </div>
+    <div class="bottom-col">
+      <div class="col-headline">Opinión</div>
+      <div class="article">
+        <h2 class="xs">«El verdadero coste de la desinformación»</h2>
+        <p class="article-deck" style="font-size:13px; margin:6px 0 8px;">Por <em>Andrés Castillo</em>, catedrático de Comunicación Política</p>
+        <p>Cada bulo viral consume recursos que las redacciones dedican a verificar en vez de investigar. Es hora de que las plataformas asuman su responsabilidad editorial sin ambages.</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.container -->
+
+<footer>
+  <strong>La Crónica</strong><br>
+  © 2026 Grupo Editorial La Crónica, S.A. · Calle de la Imprenta, 12 · 28013 Madrid · Todos los derechos reservados<br>
+  <span style="font-style:italic; margin-top:4px; display:block;">«Nulla dies sine linea»</span>
+</footer>
+
+</body>
+</html>

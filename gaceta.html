@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>La Gaceta Nacional</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IM+Fell+English:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink: #1a1208;
+      --paper: #f5f0e8;
+      --paper-dark: #e8e0cc;
+      --accent: #8b1a1a;
+      --accent-light: #c0392b;
+      --rule: #2a2010;
+      --muted: #6b5d4f;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #d4c9b0;
+      font-family: 'Libre Baskerville', Georgia, serif;
+      color: var(--ink);
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.4;
+    }
+
+    .newspaper {
+      max-width: 1080px;
+      margin: 0 auto;
+      background: var(--paper);
+      box-shadow: 0 0 60px rgba(0,0,0,0.35);
+      min-height: 100vh;
+      padding: 0 0 40px;
+    }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      border-bottom: 4px double var(--rule);
+      padding: 18px 32px 10px;
+      text-align: center;
+      background: var(--paper);
+      position: relative;
+    }
+
+    .masthead-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      font-family: 'Libre Baskerville', serif;
+    }
+
+    .masthead-top span { flex: 1; }
+    .masthead-top span:nth-child(2) { text-align: center; }
+    .masthead-top span:nth-child(3) { text-align: right; }
+
+    .paper-name {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      text-transform: none;
+    }
+
+    .paper-name span { color: var(--accent); }
+
+    .masthead-tagline {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin: 6px 0 10px;
+      letter-spacing: 0.05em;
+    }
+
+    .masthead-bottom {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-top: 1px solid var(--rule);
+      padding-top: 8px;
+    }
+
+    /* ── BREAKING BANNER ── */
+    .breaking {
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .breaking-label {
+      background: var(--ink);
+      color: #f5f0e8;
+      padding: 6px 14px;
+      font-weight: 700;
+      font-family: 'Libre Baskerville', serif;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .breaking-ticker {
+      padding: 6px 0;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .ticker-content {
+      display: inline-block;
+      white-space: nowrap;
+      animation: ticker 28s linear infinite;
+      padding-left: 100%;
+    }
+
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to { transform: translateX(-100%); }
+    }
+
+    /* ── SECTION RULE ── */
+    .section-rule {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 32px 0;
+    }
+
+    .section-rule::before, .section-rule::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-family: 'Libre Baskerville', serif;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ── MAIN CONTENT GRID ── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 2.2fr 1fr;
+      gap: 0;
+      padding: 0 32px;
+      border-bottom: 2px solid var(--rule);
+    }
+
+    .col-left, .col-right {
+      border-right: 1px solid var(--rule);
+      padding: 16px 18px 16px 0;
+    }
+    .col-right {
+      border-right: none;
+      border-left: 1px solid var(--rule);
+      padding: 16px 0 16px 18px;
+    }
+
+    .col-center {
+      padding: 16px 20px;
+      border-right: 1px solid var(--rule);
+    }
+
+    /* ── HEADLINES ── */
+    .headline-main {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .headline-main em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .headline-sub {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .headline-small {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
+
+    .byline {
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-family: 'Libre Baskerville', serif;
+    }
+
+    .article-body {
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: #2a1f12;
+      text-align: justify;
+    }
+
+    .article-body p + p {
+      text-indent: 1em;
+    }
+
+    /* ── DROP CAP ── */
+    .drop-cap::first-letter {
+      font-family: 'Playfair Display', serif;
+      font-size: 4.2rem;
+      font-weight: 900;
+      float: left;
+      line-height: 0.75;
+      margin-right: 6px;
+      margin-top: 4px;
+      color: var(--accent);
+    }
+
+    /* ── PULL QUOTE ── */
+    .pull-quote {
+      border-top: 3px solid var(--rule);
+      border-bottom: 3px solid var(--rule);
+      margin: 14px 0;
+      padding: 12px 4px;
+      text-align: center;
+    }
+
+    .pull-quote blockquote {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      line-height: 1.4;
+      color: var(--accent);
+    }
+
+    /* ── IMAGE PLACEHOLDER ── */
+    .img-block {
+      width: 100%;
+      background: linear-gradient(135deg, #c8bfa8, #a09080);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 12px 0 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .img-block img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: sepia(30%) contrast(1.1);
+    }
+
+    .img-block.tall { height: 220px; }
+    .img-block.medium { height: 150px; }
+    .img-block.short { height: 110px; }
+
+    .img-caption {
+      font-size: 0.62rem;
+      font-style: italic;
+      color: var(--muted);
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+
+    /* ── HORIZONTAL RULE ── */
+    hr.col-rule {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 14px 0;
+    }
+
+    /* ── OPINION BOX ── */
+    .opinion-box {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 14px;
+      margin: 12px 0;
+    }
+
+    .opinion-box .headline-small { color: #f5e8c0; }
+    .opinion-box .article-body { color: #d4c9b0; }
+    .opinion-box .byline { color: #a09070; }
+
+    /* ── INDEX BOX ── */
+    .index-box {
+      border: 1px solid var(--rule);
+      padding: 10px 12px;
+      margin-top: 14px;
+    }
+
+    .index-title {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 5px;
+    }
+
+    .index-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      padding: 3px 0;
+      border-bottom: 1px dotted #b0a090;
+      color: var(--ink);
+    }
+
+    .index-item span:last-child {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ── WEATHER BOX ── */
+    .weather-box {
+      border: 1px solid var(--rule);
+      padding: 10px 12px;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .weather-city {
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .weather-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      font-size: 0.65rem;
+    }
+
+    .weather-day { text-align: center; }
+    .weather-day .icon { font-size: 1.2rem; }
+    .weather-day .temp { font-weight: 700; font-size: 0.75rem; }
+
+    /* ── SECOND ROW ── */
+    .second-row {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1.5fr;
+      gap: 0;
+      padding: 0 32px;
+      border-bottom: 2px solid var(--rule);
+    }
+
+    .sr-col {
+      padding: 14px 18px 14px 0;
+      border-right: 1px solid var(--rule);
+    }
+    .sr-col:last-child {
+      border-right: none;
+      padding: 14px 0 14px 18px;
+    }
+    .sr-col:nth-child(2) {
+      padding: 14px 18px;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      padding: 12px 32px;
+      border-top: 3px double var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .footer-center {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 1rem;
+      color: var(--ink);
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .masthead, .main-grid, .second-row {
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .main-grid { animation-delay: 0.15s; }
+    .second-row { animation-delay: 0.3s; }
+
+    @media (max-width: 700px) {
+      .main-grid, .second-row { grid-template-columns: 1fr; }
+      .col-left, .col-right, .col-center, .sr-col {
+        border: none;
+        border-bottom: 1px solid var(--rule);
+        padding: 14px 0;
+      }
+      .newspaper { padding: 0 0 24px; }
+      .main-grid, .second-row, .masthead, .section-rule, .footer { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="newspaper">
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="masthead-top">
+      <span>Jueves, 19 de Febrero de 2026</span>
+      <span>★ Fundado en 1889 ★</span>
+      <span>Precio: 1,50 €</span>
+    </div>
+    <div class="paper-name">La <span>Gaceta</span> Nacional</div>
+    <div class="masthead-tagline">"La verdad, sin ornamento — la noticia, sin demora"</div>
+    <div class="masthead-bottom">
+      <span>Año CXXXVII · Nº 48.204</span>
+      <span>Madrid, España</span>
+      <span>Edición Matinal</span>
+    </div>
+  </header>
+
+  <!-- BREAKING NEWS TICKER -->
+  <div class="breaking">
+    <div class="breaking-label">Última Hora</div>
+    <div class="breaking-ticker">
+      <span class="ticker-content">
+        &nbsp;&nbsp;&nbsp;⬥ Cumbre de líderes europeos concluye con acuerdo histórico sobre energía renovable &nbsp;&nbsp;&nbsp;⬥ Los mercados abren al alza impulsados por datos positivos de empleo &nbsp;&nbsp;&nbsp;⬥ Misión espacial internacional alcanza con éxito la órbita prevista &nbsp;&nbsp;&nbsp;⬥ Récord de asistencia en el festival de cine de la capital &nbsp;&nbsp;&nbsp;⬥ El equipo nacional avanza a semifinales tras victoria ajustada &nbsp;&nbsp;&nbsp;
+      </span>
+    </div>
+  </div>
+
+  <!-- SECTION LABEL -->
+  <div class="section-rule"><span class="section-label">▸ Portada · Noticias del Día</span></div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- LEFT COL -->
+    <div class="col-left">
+      <div class="headline-small">Economía Internacional</div>
+      <div class="byline">Por Rodrigo Valls &nbsp;·&nbsp; Redactor Jefe</div>
+      <div class="img-block short">
+        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&q=70" alt="mercados"/>
+      </div>
+      <p class="img-caption">Vista del parqué bursátil durante la apertura matinal.</p>
+      <div class="article-body">
+        <p>Los principales índices bursátiles europeos registraron ganancias moderadas al cierre de la sesión de ayer, impulsados por datos de empleo mejores de lo esperado en la zona euro.</p>
+        <p>Analistas consultados por este diario señalan que la tendencia podría mantenerse durante el primer trimestre.</p>
+      </div>
+
+      <hr class="col-rule"/>
+
+      <div class="headline-small">Ciencia y Tecnología</div>
+      <div class="byline">Por Miriam Fuentes</div>
+      <div class="article-body">
+        <p>Investigadores de la Universidad Complutense presentaron ayer un nuevo método de almacenamiento de energía basado en sales fundidas, capaz de reducir costes en un cuarenta por ciento.</p>
+      </div>
+
+      <div class="index-box">
+        <div class="index-title">📰 En Esta Edición</div>
+        <div class="index-item"><span>Internacional</span><span>A2</span></div>
+        <div class="index-item"><span>Economía</span><span>B1</span></div>
+        <div class="index-item"><span>Cultura</span><span>C3</span></div>
+        <div class="index-item"><span>Deportes</span><span>D1</span></div>
+        <div class="index-item"><span>Opinión</span><span>E2</span></div>
+        <div class="index-item"><span>Sociedad</span><span>F4</span></div>
+      </div>
+    </div>
+
+    <!-- CENTER COL (MAIN STORY) -->
+    <div class="col-center">
+      <div class="headline-main">Europa alcanza un<br/><em>acuerdo sin precedentes</em><br/>en materia energética</div>
+      <div class="byline">Por Ana Belén Cortés &nbsp;·&nbsp; Corresponsal en Bruselas &nbsp;·&nbsp; Enviada Especial</div>
+
+      <div class="img-block tall">
+        <img src="https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800&q=75" alt="cumbre europea"/>
+      </div>
+      <p class="img-caption">Los dirigentes europeos firmaron el acuerdo en la sede del Consejo Europeo. — Foto: Agencia EFE</p>
+
+      <div class="article-body drop-cap">
+        <p>Los veintisiete países miembros de la Unión Europea suscribieron ayer en Bruselas un acuerdo histórico que establece un marco común para la transición energética, comprometiendo inversiones conjuntas por valor de trescientos mil millones de euros en los próximos diez años. La firma tuvo lugar tras tres días de intensas negociaciones que, en varios momentos, estuvieron a punto de fracasar.</p>
+        <p>El texto final contempla la creación de una agencia supranacional de energía renovable, la interconexión de redes eléctricas entre estados miembros y un fondo de compensación para países con mayor dependencia de combustibles fósiles.</p>
+      </div>
+
+      <div class="pull-quote">
+        <blockquote>"Este acuerdo marca el inicio de una nueva era para la soberanía energética del continente."</blockquote>
+      </div>
+
+      <div class="article-body">
+        <p>La presidenta de la Comisión Europea declaró ante la prensa que el pacto representa "el mayor avance en política energética desde la fundación de la Unión". Por su parte, el jefe del gobierno español celebró el resultado como un logro que beneficiará especialmente a los países del sur, históricamente más vulnerables a la volatilidad de los precios del gas.</p>
+        <p>Las reacciones no se hicieron esperar: los mercados respondieron con una subida generalizada de los valores energéticos, mientras que grupos ecologistas expresaron cautela, reclamando plazos más ambiciosos para la reducción de emisiones.</p>
+      </div>
+    </div>
+
+    <!-- RIGHT COL -->
+    <div class="col-right">
+
+      <div class="weather-box">
+        <div class="weather-city">El Tiempo · Madrid</div>
+        <div class="weather-grid">
+          <div class="weather-day"><div class="icon">⛅</div><div>Hoy</div><div class="temp">14°</div></div>
+          <div class="weather-day"><div class="icon">🌧️</div><div>Vie</div><div class="temp">11°</div></div>
+          <div class="weather-day"><div class="icon">☀️</div><div>Sáb</div><div class="temp">17°</div></div>
+        </div>
+      </div>
+
+      <hr class="col-rule"/>
+
+      <div class="headline-small">Política Nacional</div>
+      <div class="byline">Por Javier Morales</div>
+      <div class="article-body">
+        <p>El Congreso de los Diputados debate hoy la nueva ley de vivienda. Los grupos parlamentarios mantienen posiciones distantes, aunque fuentes cercanas a la negociación apuntan a un posible acuerdo antes del fin de semana.</p>
+      </div>
+
+      <hr class="col-rule"/>
+
+      <div class="opinion-box">
+        <div class="headline-small">Editorial</div>
+        <div class="byline" style="color:#a09070;">Consejo de Redacción</div>
+        <div class="article-body">
+          <p>El acuerdo europeo de ayer no es el fin de un camino, sino su comienzo. Las palabras deben traducirse en acciones, y las promesas, en infraestructuras.</p>
+          <p>La historia juzgará si esta generación de líderes estuvo a la altura.</p>
+        </div>
+      </div>
+
+      <hr class="col-rule"/>
+
+      <div class="headline-small">Cultura</div>
+      <div class="byline">Por Sofía Arenas</div>
+      <div class="img-block medium">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=70" alt="cultura"/>
+      </div>
+      <div class="article-body">
+        <p>El Museo del Prado inaugura mañana una exposición extraordinaria dedicada a los maestros flamencos del siglo XVII, con obras cedidas por colecciones privadas nunca antes expuestas al público.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SECTION LABEL -->
+  <div class="section-rule" style="margin-top:4px;"><span class="section-label">▸ Más Noticias</span></div>
+
+  <!-- SECOND ROW -->
+  <div class="second-row">
+
+    <div class="sr-col">
+      <div class="headline-sub">El equipo nacional accede a semifinales con una victoria en la prórroga</div>
+      <div class="byline">Por Carlos Domínguez &nbsp;·&nbsp; Deportes</div>
+      <div class="article-body">
+        <p>En un partido que mantuvo al estadio en vilo durante noventa y tres minutos, la selección nacional logró clasificarse para las semifinales del torneo continental gracias a un gol en el tiempo extra.</p>
+        <p>El seleccionador destacó el "espíritu colectivo" del equipo y anunció que los titulares descansarán en el próximo partido de liga.</p>
+      </div>
+    </div>
+
+    <div class="sr-col">
+      <div class="headline-sub">La natalidad cae a mínimos históricos en doce países</div>
+      <div class="byline">Por Laura Sanz &nbsp;·&nbsp; Sociedad</div>
+      <div class="article-body">
+        <p>Un informe de la ONU revela que doce países europeos registraron en 2025 la tasa de natalidad más baja desde que existen registros fiables. Los demógrafos advierten sobre las consecuencias a largo plazo para los sistemas de pensiones.</p>
+      </div>
+
+      <hr class="col-rule"/>
+
+      <div class="headline-small">Breves</div>
+      <div class="article-body" style="font-size:0.75rem; line-height:1.55;">
+        <p>▸ <strong>Roma:</strong> Un incendio en un almacén portuario movilizó a cien bomberos durante la madrugada. Sin víctimas.</p>
+        <p style="margin-top:5px;">▸ <strong>Tokio:</strong> Japón presentó su nueva generación de trenes de alta velocidad, capaces de alcanzar los 500 km/h.</p>
+        <p style="margin-top:5px;">▸ <strong>Buenos Aires:</strong> El tipo de cambio oficial alcanzó un nuevo máximo histórico frente al dólar.</p>
+      </div>
+    </div>
+
+    <div class="sr-col">
+      <div class="headline-sub">Inteligencia artificial en el aula: debate abierto entre docentes y familias</div>
+      <div class="byline">Por Patricia Leal &nbsp;·&nbsp; Educación</div>
+      <div class="img-block medium">
+        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=70" alt="educacion"/>
+      </div>
+      <p class="img-caption">Alumnos en el aula durante una sesión de tecnología educativa.</p>
+      <div class="article-body">
+        <p>La irrupción de herramientas de inteligencia artificial en los centros escolares ha reabierto el debate sobre los límites entre ayuda pedagógica y dependencia tecnológica. Mientras algunos docentes celebran las nuevas posibilidades, muchos padres expresan preocupación.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span>© 2026 La Gaceta Nacional, S.A.</span>
+    <span class="footer-center">La Gaceta Nacional</span>
+    <span>Todos los derechos reservados</span>
+  </footer>
+
+</div>
+</body>
+</html>
